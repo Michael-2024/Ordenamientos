@@ -1,194 +1,308 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include <sstream>
+#include <chrono>
+#include <algorithm>
 
-// Function prototypes
-void printMainMenu();
-void printSortingMenu();
-void bubbleSort(std::vector<long long int>& arr);
-void selectionSort(std::vector<long long int>& arr);
-void insertionSort(std::vector<long long int>& arr);
-void mergeSort(std::vector<long long int>& arr, int left, int right);
-void merge(std::vector<long long int>& arr, int left, int mid, int right);
-void quickSort(std::vector<long long int>& arr, int low, int high);
-int partition(std::vector<long long int>& arr, int low, int high);
-void bucketSort(std::vector<long long int>& arr);
-void shellSort(std::vector<long long int>& arr);
-void countingSort(std::vector<long long int>& arr);
-void radixSort(std::vector<long long int>& arr);
-void printArray(const std::vector<long long int>& arr);
+using namespace std;
+
+vector<int> arr;
+
+// Prototipos de funciones
+void bubbleSort(vector<int>& arr);
+void selectionSort(vector<int>& arr);
+void insertionSort(vector<int>& arr);
+void mergeSort(vector<int>& arr, int l, int r);
+void quickSort(vector<int>& arr, int low, int high);
+void bucketSort(vector<int>& arr);
+void shellSort(vector<int>& arr);
+void countingSort(vector<int>& arr);
+
+void insertar() {
+    if (!arr.empty()) {
+        cout << "Ya hay un array insertado. Para insertar uno nuevo, primero elimine el actual." << endl;
+        return;
+    }
+
+    cout << "Ingrese el array de numeros separados por espacios: ";
+    string input;
+    getline(cin, input);
+    stringstream ss(input);
+    int num;
+    while (ss >> num) {
+        arr.push_back(num);
+    }
+}
+
+void eliminar() {
+    if (arr.empty()) {
+        cout << "No hay ningún array insertado para eliminar." << endl;
+        return;
+    }
+
+    arr.clear();
+    cout << "Array eliminado exitosamente." << endl;
+}
+
+void ordenar() {
+    if (arr.empty()) {
+        cout << "Antes de ordenar, debe ingresar un array." << endl;
+        return;
+    }
+
+    vector<int> arr_copy = arr;
+
+    cout << "Seleccione el metodo de ordenamiento:" << endl;
+    cout << "1. Bubble Sort" << endl;
+    cout << "2. Selection Sort" << endl;
+    cout << "3. Insertion Sort" << endl;
+    cout << "4. Merge Sort" << endl;
+    cout << "5. Quicksort" << endl;
+    cout << "6. Bucket Sort" << endl;
+    cout << "7. Shell Sort" << endl;
+    cout << "8. Counting Sort" << endl;
+
+    int opcion;
+    cin >> opcion;
+
+    auto start = chrono::high_resolution_clock::now();
+
+    switch (opcion) {
+        case 1:
+            // Bubble Sort
+            bubbleSort(arr_copy);
+            break;
+        case 2:
+            // Selection Sort
+            selectionSort(arr_copy);
+            break;
+        case 3:
+            // Insertion Sort
+            insertionSort(arr_copy);
+            break;
+        case 4:
+            // Merge Sort
+            mergeSort(arr_copy, 0, arr_copy.size() - 1);
+            break;
+        case 5:
+            // Quicksort
+            quickSort(arr_copy, 0, arr_copy.size() - 1);
+            break;
+        case 6:
+            // Bucket Sort
+            bucketSort(arr_copy);
+            break;
+        case 7:
+            // Shell Sort
+            shellSort(arr_copy);
+            break;
+        case 8:
+            // Counting Sort
+            countingSort(arr_copy);
+            break;
+        default:
+            cout << "Opción no válida." << endl;
+            return;
+    }
+
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> tiempo = end - start;
+
+    cout << "Array ordenado exitosamente." << endl;
+    cout << "Tiempo total: " << tiempo.count() << " segundos" << endl;
+
+    cout << "Array ordenado: ";
+    for (int num : arr_copy) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+
+void selectionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; ++i) {
+        int min_idx = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        swap(arr[i], arr[min_idx]);
+    }
+}
+
+void insertionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void merge(vector<int>& arr, int l, int m, int r) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    vector<int> L(n1), R(n2);
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (int j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    int i = 0, j = 0, k = l;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int l, int r) {
+    if (l >= r) return;
+    int m = l + (r - l) / 2;
+    mergeSort(arr, l, m);
+    mergeSort(arr, m + 1, r);
+    merge(arr, l, m, r);
+}
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+void bucketSort(vector<int>& arr) {
+    const int max_val = *max_element(arr.begin(), arr.end()) + 1;
+    vector<int> bucket(max_val, 0);
+
+    for (int num : arr) {
+        bucket[num]++;
+    }
+
+    arr.clear();
+    for (int i = 0; i < max_val; ++i) {
+        for (int j = 0; j < bucket[i]; ++j) {
+            arr.push_back(i);
+        }
+    }
+}
+
+void shellSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; ++i) {
+            int temp = arr[i];
+            int j;
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                arr[j] = arr[j - gap];
+            }
+            arr[j] = temp;
+        }
+    }
+}
+
+void countingSort(vector<int>& arr) {
+    const int max_val = *max_element(arr.begin(), arr.end()) + 1;
+    vector<int> count(max_val, 0);
+    vector<int> output(arr.size());
+
+    for (int num : arr) {
+        count[num]++;
+    }
+
+    for (int i = 1; i < max_val; ++i) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = arr.size() - 1; i >= 0; --i) {
+        output[count[arr[i]] - 1] = arr[i];
+        count[arr[i]]--;
+    }
+
+    arr = output;
+}
 
 int main() {
-    std::vector<long long int> numbers;
-    int choice, sortChoice;
-    std::string input;
-    bool exit = false;
+    int opcion;
 
-    while (!exit) {
-        printMainMenu();
-        std::cin >> choice;
+    do {
+        cout << "\nMENU PRINCIPAL" << endl;
+        cout << "1. Insertar" << endl;
+        cout << "2. Ordenar" << endl;
+        cout << "3. Eliminar" << endl;
+        cout << "4. Salir" << endl;
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
 
-        switch (choice) {
-            case 1: {
-                std::cout << "Ingrese números separados por espacios (Presione ENTER para finalizar): ";
-                std::cin.ignore(); // Clear the input buffer
-                std::getline(std::cin, input);
-                std::istringstream iss(input);
-                long long int num;
-                while (iss >> input) {
-                    try {
-                        num = std::stoll(input);
-                        numbers.push_back(num);
-                    } catch (std::invalid_argument const& e) {
-                        std::cout << "Error: '" << input << "' no es un número válido." << std::endl;
-                        numbers.clear(); // Clear the numbers vector
-                        break;
-                    } catch (std::out_of_range const& e) {
-                        std::cout << "Error: '" << input << "' está fuera del rango de representación de enteros." << std::endl;
-                        numbers.clear(); // Clear the numbers vector
-                        break;
-                    }
-                }
+        cin.ignore(); // Limpiar el buffer del teclado
+
+        switch (opcion) {
+            case 1:
+                insertar();
                 break;
-            }
             case 2:
-                printSortingMenu();
-                std::cin >> sortChoice;
-                switch (sortChoice) {
-                    case 1:
-                        bubbleSort(numbers);
-                        break;
-                    case 2:
-                        selectionSort(numbers);
-                        break;
-                    case 3:
-                        insertionSort(numbers);
-                        break;
-                    case 4:
-                        mergeSort(numbers, 0, numbers.size() - 1);
-                        break;
-                    case 5:
-                        quickSort(numbers, 0, numbers.size() - 1);
-                        break;
-                    case 6:
-                        bucketSort(numbers);
-                        break;
-                    case 7:
-                        shellSort(numbers);
-                        break;
-                    case 8:
-                        countingSort(numbers);
-                        break;
-                    case 9:
-                        radixSort(numbers);
-                        break;
-                    default:
-                        std::cout << "Opción inválida. Por favor, intente de nuevo." << std::endl;
-                }
+                ordenar();
                 break;
             case 3:
-                if (!numbers.empty()) {
-                    std::cout << "Ingrese el índice del número que desea eliminar (tenga encuenta que se inicia desde cero): ";
-                    size_t index;
-                    std::cin >> index;
-                    if (index >= 0 && index < numbers.size()) {
-                        numbers.erase(numbers.begin() + index);
-                    } else {
-                        std::cout << "Índice inválido." << std::endl;
-                    }
-                } else {
-                    std::cout << "La lista está vacía." << std::endl;
-                }
+                eliminar();
                 break;
             case 4:
-                std::cout << "Saliendo del programa." << std::endl;
-                exit = true;
+                cout << "Saliendo del programa." << endl;
                 break;
             default:
-                std::cout << "Opción inválida. Por favor, intente de nuevo." << std::endl;
+                cout << "Opción no válida." << endl;
+                break;
         }
-
-        if (!exit && !numbers.empty()) {
-            std::cout << "Lista actual: ";
-            printArray(numbers);
-            std::cout << std::endl;
-        }
-    }
+    } while (opcion != 4);
 
     return 0;
-}
-
-void printMainMenu() {
-    std::cout << "\nMenú principal:" << std::endl;
-    std::cout << "1. Ingresar número(s)" << std::endl;
-    std::cout << "2. Escoger tipo de ordenamiento" << std::endl;
-    std::cout << "3. Eliminar número" << std::endl;
-    std::cout << "4. Salir" << std::endl;
-    std::cout << "Ingrese su elección: ";
-}
-
-void printSortingMenu() {
-    std::cout << "\nMenú de ordenamiento:" << std::endl;
-    std::cout << "1. Bubble Sort" << std::endl;
-    std::cout << "2. Selection Sort" << std::endl;
-    std::cout << "3. Insertion Sort" << std::endl;
-    std::cout << "4. Merge Sort" << std::endl;
-    std::cout << "5. Quicksort" << std::endl;
-    std::cout << "6. Bucket Sort" << std::endl;
-    std::cout << "7. Shell Sort" << std::endl;
-    std::cout << "8. Counting Sort" << std::endl;
-    std::cout << "9. Radix Sort" << std::endl;
-    std::cout << "Ingrese su elección: ";
-}
-
-void bubbleSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void selectionSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void insertionSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void mergeSort(std::vector<long long int>& arr, int left, int right) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void merge(std::vector<long long int>& arr, int left, int mid, int right) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void quickSort(std::vector<long long int>& arr, int low, int high) {
-    std::sort(arr.begin(), arr.end());
-}
-
-int partition(std::vector<long long int>& arr, int low, int high) {
-    std::sort(arr.begin(), arr.end());
-    return 0;
-}
-
-void bucketSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void shellSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void countingSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void radixSort(std::vector<long long int>& arr) {
-    std::sort(arr.begin(), arr.end());
-}
-
-void printArray(const std::vector<long long int>& arr) {
-    for (long long int num : arr) {
-        std::cout << num << " ";
-    }
 }
