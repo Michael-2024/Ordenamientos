@@ -1,0 +1,36 @@
+1. `#include <iostream>`: Incluye la biblioteca estándar de entrada/salida para la entrada/salida básica.
+2. `#include <fstream>`: Incluye la biblioteca para la entrada/salida de archivos.
+3. `#include <vector>`: Incluye la biblioteca de vectores de la STL (Standard Template Library).
+4. `#include <algorithm>`: Incluye la biblioteca de algoritmos estándar.
+5. `#include <chrono>`: Incluye la biblioteca de cronometraje para medir el tiempo de ejecución de los algoritmos.
+
+7. `using namespace std;`: Esto declara que se usará el espacio de nombres `std`, evitando la necesidad de escribir `std::` delante de las funciones y clases de la biblioteca estándar.
+
+9-33: Se define una función `bubbleSort` que ordena un vector usando el algoritmo de ordenamiento de burbuja.
+
+35-65: Se define una función `insertionSort` que ordena un vector usando el algoritmo de ordenamiento de inserción.
+
+67-98: Se define una función `selectionSort` que ordena un vector usando el algoritmo de ordenamiento de selección.
+
+100-141: Se define una función `merge` que combina dos subarreglos ordenados para el algoritmo de ordenamiento de mezcla (merge sort).
+
+143-163: Se define una función `mergeSort` que implementa el algoritmo de ordenamiento de mezcla (merge sort).
+
+165-198: Se define una función `partition` que particiona un vector para el algoritmo de ordenamiento rápido (quick sort).
+
+200-223: Se define una función `quickSort` que implementa el algoritmo de ordenamiento rápido (quick sort).
+
+225-286: Se define una función `bucketSort` que ordena un vector usando el algoritmo de ordenamiento de cubetas (bucket sort).
+
+288-327: Se define una función `shellSort` que ordena un vector usando el algoritmo de ordenamiento de Shell.
+
+329-359: Se define una función `countingSort` que ordena un vector usando el algoritmo de ordenamiento de conteo.
+
+361-399: Se define una función `radixSort` que ordena un vector usando el algoritmo de ordenamiento radix.
+
+401-440: Se define una función `readDataFromFile` que lee datos de un archivo y los almacena en un vector.
+
+442-462: Se define una función `printVector` que imprime un vector.
+
+464-592: La función principal `main`, que controla el flujo del programa, incluye la lectura de datos desde un archivo, la presentación de un menú para que el usuario elija el algoritmo de ordenamiento deseado y las operaciones correspondientes según la elección del usuario.
+
