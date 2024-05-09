@@ -1,0 +1,56 @@
+1. `#include <iostream>`: Incluye la biblioteca estándar de entrada/salida para la entrada/salida básica.
+2. `#include <fstream>`: Incluye la biblioteca para la entrada/salida de archivos.
+3. `#include <vector>`: Incluye la biblioteca de vectores de la STL (Standard Template Library).
+4. `#include <algorithm>`: Incluye la biblioteca de algoritmos estándar.
+5. `#include <chrono>`: Incluye la biblioteca de cronometraje para medir el tiempo de ejecución de los algoritmos.
+
+7. `using namespace std;`: Esto declara que se usará el espacio de nombres `std`, evitando la necesidad de escribir `std::` delante de las funciones y clases de la biblioteca estándar.
+
+9-33: Se define una función `bubbleSort` que ordena un vector usando el algoritmo de ordenamiento de burbuja.
+
+35-65: Se define una función `insertionSort` que ordena un vector usando el algoritmo de ordenamiento de inserción.
+
+67-98: Se define una función `selectionSort` que ordena un vector usando el algoritmo de ordenamiento de selección.
+
+100-141: Se define una función `merge` que combina dos subarreglos ordenados para el algoritmo de ordenamiento de mezcla (merge sort).
+
+143-163: Se define una función `mergeSort` que implementa el algoritmo de ordenamiento de mezcla (merge sort).
+
+165-198: Se define una función `partition` que particiona un vector para el algoritmo de ordenamiento rápido (quick sort).
+
+200-223: Se define una función `quickSort` que implementa el algoritmo de ordenamiento rápido (quick sort).
+
+225-286: Se define una función `bucketSort` que ordena un vector usando el algoritmo de ordenamiento de cubetas (bucket sort).
+
+288-327: Se define una función `shellSort` que ordena un vector usando el algoritmo de ordenamiento de Shell.
+
+329-359: Se define una función `countingSort` que ordena un vector usando el algoritmo de ordenamiento de conteo.
+
+361-399: Se define una función `radixSort` que ordena un vector usando el algoritmo de ordenamiento radix.
+
+401-440: Se define una función `readDataFromFile` que lee datos de un archivo y los almacena en un vector.
+
+442-462: Se define una función `printVector` que imprime un vector.
+
+464-592: La función principal `main`, que controla el flujo del programa, incluye la lectura de datos desde un archivo, la presentación de un menú para que el usuario elija el algoritmo de ordenamiento deseado y las operaciones correspondientes según la elección del usuario.
+
+
+1. Bubble Sort (Ordenamiento de Burbuja):
+Este algoritmo recorre repetidamente la lista y compara elementos adyacentes. Si están en el orden incorrecto, los intercambia. El proceso se repite hasta que no se requieren más intercambios, lo que indica que la lista está ordenada.
+2. Insertion Sort (Ordenamiento por Inserción):
+El algoritmo comienza con un arreglo de un solo elemento y lo expande ordenadamente uno por uno. En cada iteración, toma un elemento no ordenado y lo coloca en su posición correcta dentro del arreglo ordenado.
+3. Selection Sort (Ordenamiento por Selección):
+Este algoritmo divide la lista en dos partes: una parte ordenada y una parte no ordenada. En cada iteración, busca el elemento más pequeño en la parte no ordenada y lo coloca al principio de la parte ordenada.
+4. Merge Sort (Ordenamiento por Mezcla):
+Divide la lista en dos mitades, ordena recursivamente cada mitad y luego combina las dos mitades ordenadas en una sola lista ordenada. Utiliza una función de fusión para combinar las sublistas ordenadas.
+5. Quick Sort (Ordenamiento Rápido):
+Elige un elemento como pivote y divide la lista en dos partes: una con elementos menores que el pivote y otra con elementos mayores que el pivote. Luego ordena recursivamente las dos partes. Utiliza un proceso de partición para dividir la lista.
+6. Bucket Sort (Ordenamiento por Cubetas):
+Divide la lista en un número finito de cubetas. Luego, coloca cada elemento en su cubeta correspondiente. Finalmente, ordena cada cubeta individualmente y luego concatena todas las cubetas para obtener la lista ordenada.
+7. Shell Sort (Ordenamiento de Shell):
+Es una variante de Insertion Sort. Divide la lista en subgrupos más pequeños usando un espacio entre elementos (intervalo). Luego, ordena cada subgrupo utilizando Insertion Sort. Gradualmente reduce el tamaño del intervalo hasta que se convierte en 1, lo que completa la ordenación.
+8. Counting Sort (Ordenamiento por Cuenta):
+Este algoritmo funciona contando el número de elementos distintos y almacenando esta información para cada elemento. Luego, utiliza esta información para ubicar cada elemento en la posición correcta en la lista ordenada.
+9. Radix Sort (Ordenamiento Radix):
+Ordena los elementos procesando los dígitos individuales. Comienza con el dígito menos significativo y ordena los elementos en función de ese dígito. 
+Luego, repite este proceso para cada dígito, desde el menos significativo hasta el más significativo.
