@@ -5,58 +5,136 @@
 #include <chrono>
 
 using namespace std;
+using namespace std::chrono;
+
+// Función de Counting Sort
+int countingSort(vector<long long> &vec) {
+    long long maxVal = *max_element(vec.begin(), vec.end());
+    long long minVal = *min_element(vec.begin(), vec.end());
+    long long range = maxVal - minVal + 1;
+    vector<long long> count(range), output(vec.size());
+    int iterations = 0;
+
+    for (long long i = 0; i < vec.size(); i++) {
+        count[vec[i] - minVal]++;
+        iterations++;
+    }
+
+    for (long long i = 1; i < range; i++) {
+        count[i] += count[i - 1];
+        iterations++;
+    }
+
+    for (long long i = vec.size() - 1; i >= 0; i--) {
+        output[count[vec[i] - minVal] - 1] = vec[i];
+        count[vec[i] - minVal]--;
+        iterations++;
+    }
+
+    for (long long i = 0; i < vec.size(); i++) {
+        vec[i] = output[i];
+        iterations++;
+    }
+
+    return iterations;
+}
+
+// Función para obtener el dígito en la posición especificada
+long long getDigit(long long num, long long exp) {
+    return (num / exp) % 10;
+}
+
+// Función auxiliar para realizar el conteo de los dígitos
+void countSort(vector<long long> &vec, long long exp, int &iterations) {
+    long long n = vec.size();
+    vector<long long> output(n);
+    long long count[10] = {0};
+
+    // Contar ocurrencias de los dígitos
+    for (long long i = 0; i < n; i++) {
+        count[getDigit(vec[i], exp)]++;
+        iterations++;
+    }
+
+    // Cambiar count[i] para que contenga la posición real de este dígito en output[]
+    for (long long i = 1; i < 10; i++) {
+        count[i] += count[i - 1];
+        iterations++;
+    }
+
+    // Construir el arreglo de salida
+    for (long long i = n - 1; i >= 0; i--) {
+        output[count[getDigit(vec[i], exp)] - 1] = vec[i];
+        count[getDigit(vec[i], exp)]--;
+        iterations++;
+    }
+
+    // Copiar el arreglo de salida a vec[], para que vec ahora contenga los números ordenados
+    for (long long i = 0; i < n; i++) {
+        vec[i] = output[i];
+        iterations++;
+    }
+}
+
+// Función principal de Radix Sort con conteo de iteraciones
+int radixSort(vector<long long> &vec) {
+    int iterations = 0;
+
+    // Encuentra el número máximo para saber el número de dígitos
+    long long maxNum = *max_element(vec.begin(), vec.end());
+
+    // Realiza el conteo y la suma de los dígitos en cada posición
+    for (long long exp = 1; maxNum / exp > 0; exp *= 10) {
+        countSort(vec, exp, iterations);
+    }
+
+    return iterations;
+}
 
 // Función para ordenar el vector usando el método de la burbuja
-int bubbleSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
+int bubbleSort(vector<long long> &vec) {
+    long long n = vec.size();
     int iterations = 0;
-    for (int i = 0; i < n - 1; i++) {
+    for (long long i = 0; i < n - 1; i++) {
         bool swapped = false;
-        for (int j = 0; j < n - i - 1; j++) {
+        for (long long j = 0; j < n - i - 1; j++) {
             iterations++;
             if (vec[j] > vec[j + 1]) {
                 swap(vec[j], vec[j + 1]);
                 swapped = true;
             }
-            
         }
         if (!swapped) // Si no hubo intercambios, el arreglo ya está ordenado
             break;
     }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
     return iterations;
 }
 
 // Función para ordenar el vector usando el método de inserción
-int insertionSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
+int insertionSort(vector<long long> &vec) {
+    long long n = vec.size();
     int iterations = 0;
-    for (int i = 1; i < n; i++) {
-        int key = vec[i];
-        int j = i - 1;
+    for (long long i = 1; i < n; i++) {
+        long long key = vec[i];
+        long long j = i - 1;
         while (j >= 0 && vec[j] > key) {
             vec[j + 1] = vec[j];
             j = j - 1;
             iterations++;
         }
         vec[j + 1] = key;
+        iterations++;
     }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
     return iterations;
 }
 
 // Función para ordenar el vector usando el método de selección
-int selectionSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
+int selectionSort(vector<long long> &vec) {
+    long long n = vec.size();
     int iterations = 0;
-    for (int i = 0; i < n - 1; i++) {
-        int minIndex = i;
-        for (int j = i + 1; j < n; j++) {
+    for (long long i = 0; i < n - 1; i++) {
+        long long minIndex = i;
+        for (long long j = i + 1; j < n; j++) {
             iterations++;
             if (vec[j] < vec[minIndex]) {
                 minIndex = j;
@@ -64,27 +142,25 @@ int selectionSort(vector<int> &vec) {
         }
         swap(vec[i], vec[minIndex]);
     }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
     return iterations;
 }
 
 // Función para combinar dos subarreglos ordenados
-void merge(vector<int> &vec, int l, int m, int r) {
-    int n1 = m - l + 1;
-    int n2 = r - m;
+void merge(vector<long long> &vec, long long l, long long m, long long r, int &iterations) {
+    long long n1 = m - l + 1;
+    long long n2 = r - m;
 
     // Creamos subarreglos temporales
-    vector<int> L(n1), R(n2);
+    vector<long long> L(n1), R(n2);
 
     // Copiamos los datos a los subarreglos temporales L[] y R[]
-    for (int i = 0; i < n1; i++)
+    for (long long i = 0; i < n1; i++)
         L[i] = vec[l + i];
-    for (int j = 0; j < n2; j++)
+    for (long long j = 0; j < n2; j++)
         R[j] = vec[m + 1 + j];
 
     // Fusionamos los subarreglos temporales de vuelta a vec[l..r]
-    int i = 0, j = 0, k = l;
+    long long i = 0, j = 0, k = l;
     while (i < n1 && j < n2) {
         if (L[i] <= R[j]) {
             vec[k] = L[i];
@@ -94,6 +170,7 @@ void merge(vector<int> &vec, int l, int m, int r) {
             j++;
         }
         k++;
+        iterations++; // Incrementamos las iteraciones en cada comparación
     }
 
     // Copiamos los elementos restantes de L[], si hay alguno
@@ -109,67 +186,62 @@ void merge(vector<int> &vec, int l, int m, int r) {
         j++;
         k++;
     }
-    
-    
 }
 
 // Función principal de Merge Sort
-void mergeSort(vector<int> &vec, int l, int r) {
-    
+void mergeSort(vector<long long> &vec, long long l, long long r, int &iterations) {
     if (l < r) {
-        int m = l + (r - l) / 2;
-        mergeSort(vec, l, m);
-        mergeSort(vec, m + 1, r);
-        merge(vec, l, m, r);
+        long long m = l + (r - l) / 2;
+        mergeSort(vec, l, m, iterations);
+        mergeSort(vec, m + 1, r, iterations);
+        merge(vec, l, m, r, iterations); // Pasamos la referencia de 'iterations' a 'merge'
     }
-    
 }
 
 
 // Función para particionar el vector en torno a un pivote
-int partition(vector<int> &vec, int low, int high) {
-    int pivot = vec[high]; // Tomamos el último elemento como pivote
-    int i = (low - 1); // Índice del menor elemento
+long long partition(vector<long long> &vec, long long low, long long high, int &iterations) {
+    long long pivot = vec[high]; // Tomamos el último elemento como pivote
+    long long i = (low - 1); // Índice del menor elemento
 
-    for (int j = low; j <= high - 1; j++) {
+    for (long long j = low; j <= high - 1; j++) {
         if (vec[j] < pivot) {
             i++; // Incrementamos el índice del menor elemento
             swap(vec[i], vec[j]);
         }
+        iterations++;
     }
     swap(vec[i + 1], vec[high]);
     return (i + 1);
 }
 
-int quickSort(vector<int> &vec, int low, int high) {
-    
+int quickSort(vector<long long> &vec, long long low, long long high) {
+    int iterations = 0;
     if (low < high) {
-        int pi = partition(vec, low, high);
-        int leftIterations = quickSort(vec, low, pi - 1);
-        int rightIterations = quickSort(vec, pi + 1, high);
-        return leftIterations + rightIterations + high - low;
+        long long pi = partition(vec, low, high, iterations);
+        iterations += quickSort(vec, low, pi - 1);
+        iterations += quickSort(vec, pi + 1, high);
     }
-    return 0;
+    return iterations;
 }
 
-void bucketSort(vector<int> &vec, int numBuckets, int &iterations) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
+void bucketSort(vector<long long> &vec, int numBuckets, int &iterations) {
+    long long n = vec.size();
     if (n == 0)
         return;
 
     // Encuentra el valor máximo y mínimo en el vector
-    int maxVal = *max_element(vec.begin(), vec.end());
-    int minVal = *min_element(vec.begin(), vec.end());
+    long long maxVal = *max_element(vec.begin(), vec.end());
+    long long minVal = *min_element(vec.begin(), vec.end());
 
     // Calcula el tamaño de cada balde
     double range = (double)(maxVal - minVal + 1) / numBuckets;
 
     // Crea un vector de baldes
-    vector<vector<int>> buckets(numBuckets);
+    vector<vector<long long>> buckets(numBuckets);
 
     // Coloca cada elemento en su balde correspondiente
-    for (int i = 0; i < n; i++) {
+    for (long long i = 0; i < n; i++) {
         int index = (int)((vec[i] - minVal) / range);
         buckets[index].push_back(vec[i]);
     }
@@ -177,134 +249,70 @@ void bucketSort(vector<int> &vec, int numBuckets, int &iterations) {
     // Ordena cada balde
     iterations = 0;
     for (int i = 0; i < numBuckets; i++) {
-        iterations += insertionSort(buckets[i]); // Usamos Insertion Sort para ordenar cada balde
+        iterations += insertionSort(buckets[i]);
     }
 
-    // Combina todos los baldes en el vector original
-    int index = 0;
+    // Une los baldes en el vector original
+    vec.clear();
     for (int i = 0; i < numBuckets; i++) {
-        for (int j = 0; j < buckets[i].size(); j++) {
-            vec[index++] = buckets[i][j];
+        for (long long j = 0; j < buckets[i].size(); j++) {
+            vec.push_back(buckets[i][j]);
+            iterations++;
         }
     }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
 }
 
-int shellSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
+// Función para ordenar el vector usando el método de Shell Sort
+int shellSort(vector<long long> &vec) {
+    long long n = vec.size();
     int iterations = 0;
-
-    // Comienza con un gran intervalo y lo reduce gradualmente
-    for (int gap = n / 2; gap > 0; gap /= 2) {
-        // Realiza el insertion sort para los elementos en el intervalo gap
-        for (int i = gap; i < n; i++) {
-            int temp = vec[i];
-            int j;
+    for (long long gap = n / 2; gap > 0; gap /= 2) {
+        for (long long i = gap; i < n; i++) {
+            long long temp = vec[i];
+            long long j;
             for (j = i; j >= gap && vec[j - gap] > temp; j -= gap) {
                 vec[j] = vec[j - gap];
                 iterations++;
             }
             vec[j] = temp;
+            iterations++;
         }
     }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
     return iterations;
 }
 
-// Función para contar los elementos de un vector
-void countingSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int max = *max_element(vec.begin(), vec.end());
-    int min = *min_element(vec.begin(), vec.end());
-    int range = max - min + 1;
-
-    vector<int> count(range), output(vec.size());
-    for (int i = 0; i < vec.size(); i++)
-        count[vec[i] - min]++;
-
-    for (int i = 1; i < count.size(); i++)
-        count[i] += count[i - 1];
-
-    for (int i = vec.size() - 1; i >= 0; i--) {
-        output[count[vec[i] - min] - 1] = vec[i];
-        count[vec[i] - min]--;
-    }
-
-    for (int i = 0; i < vec.size(); i++)
-        vec[i] = output[i];
-        auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
-}
-
-
-// Función auxiliar para obtener el dígito en la posición especificada
-int getDigit(int num, int pos) {
-    for (int i = 1; i < pos; i++)
-        num /= 10;
-    return num % 10;
-}
-
-// Función principal de Radix Sort
-void radixSort(vector<int> &vec) {
-    auto start = std::chrono::steady_clock::now();
-    int n = vec.size();
-    if (n == 0)
-        return;
-
-    // Encuentra el número máximo para determinar el número de dígitos
-    int maxNum = *max_element(vec.begin(), vec.end());
-
-    // Realiza el conteo y la suma de los dígitos en cada posición
-    for (int exp = 1; maxNum / exp > 0; exp *= 10) {
-        vector<int> count(10, 0), output(n);
-        for (int i = 0; i < n; i++)
-            count[getDigit(vec[i], exp)]++;
-
-        for (int i = 1; i < 10; i++)
-            count[i] += count[i - 1];
-
-        // Construye el arreglo de salida
-        for (int i = n - 1; i >= 0; i--) {
-            output[count[getDigit(vec[i], exp)] - 1] = vec[i];
-            count[getDigit(vec[i], exp)]--;
-        }
-
-        // Copia el arreglo de salida al arreglo original
-        for (int i = 0; i < n; i++)
-            vec[i] = output[i];
-    }
-    auto end = std::chrono::steady_clock::now();
-            cout << "Tiempo de ejecución de Bubble Sort: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " microsegundos" << std::endl;
-}
-
 // Función para leer datos de un archivo de texto y almacenarlos en un vector
-void readDataFromFile(vector<int> &vec, const string &filename) {
+void readDataFromFile(vector<long long> &vec, const string &filename) {
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "No se pudo abrir el archivo " << filename << endl;
         return;
     }
 
-    int num;
+    long long num;
     while (file >> num) {
         vec.push_back(num);
     }
     file.close();
 }
 
-// Función para imprimir el vector
-void printVector(const vector<int> &vec) {
-    for (int num : vec) {
-        cout << num << " ";
+// Función para agregar un número al vector
+void insertNumber(vector<long long> &vec, long long number) {
+    vec.push_back(number);
+}
+
+// Función para eliminar un número del vector
+bool deleteNumber(vector<long long> &vec, long long number) {
+    auto it = find(vec.begin(), vec.end(), number);
+    if (it != vec.end()) {
+        vec.erase(it);
+        return true;
     }
-    cout << endl;
+    return false;
 }
 
 int main() {
-    vector<int> data;
+    vector<long long> data;
     string filename = "numeros_aleatorios.txt"; // Nombre del archivo de datos
 
     // Leer datos del archivo
@@ -313,139 +321,112 @@ int main() {
     // Muestra la cantidad de datos
     cout << "Cantidad de datos: " << data.size() << endl;
 
-    // Muestra los datos desordenados
-    cout << "Datos desordenados: ";
-    printVector(data);
-
-    int choice;
-    do {
-        cout << "\nMenú:\n";
-        cout << "1. Ordenar los datos (Bubble Sort)\n";
-        cout << "2. Ordenar los datos (Insertion Sort )\n";
-        cout << "3. Ordenar los datos (Selection Sort)\n";
-        cout << "4. Ordenar los datos (Merge Sort)\n";
-        cout << "5. Ordenar los datos (Quick Sort)\n";
-        cout << "6. Ordenar los datos (Bucket Sort)\n";
-        cout << "7. Ordenar los datos (Shell Sort)\n";
-        cout << "8. Ordenar los datos (Counting Sort)\n";
-        cout << "9. Ordenar los datos (Radix Sort)\n";
-        cout << "10. Agregar dato\n";
-        cout << "11. Eliminar dato\n";
-        cout << "12. Salir\n";
+    while (true) {
+        int choice;
+        cout << "Seleccione una opción:" << endl;
+        cout << "1. Ordenar usando Bubble Sort" << endl;
+        cout << "2. Ordenar usando Insertion Sort" << endl;
+        cout << "3. Ordenar usando Selection Sort" << endl;
+        cout << "4. Ordenar usando Merge Sort" << endl;
+        cout << "5. Ordenar usando Quick Sort" << endl;
+        cout << "6. Ordenar usando Bucket Sort" << endl;
+        cout << "7. Ordenar usando Shell Sort" << endl;
+        cout << "8. Ordenar usando Radix Sort" << endl;
+        cout << "9. Ordenar usando Counting Sort" << endl;
+        cout << "10. Insertar un número" << endl;
+        cout << "11. Eliminar un número" << endl;
+        cout << "12. Salir" << endl;
         cout << "Ingrese su elección: ";
         cin >> choice;
 
+        vector<long long> sortedData = data;
+        auto start = high_resolution_clock::now();
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        int iterations = 0;
+
         switch (choice) {
             case 1:
-                {
-                    vector<int> tempData = data; // Copia de los datos para no alterar el original
-                    int iterations = bubbleSort(tempData);
-                    cout << "Número de iteraciones realizadas: " << iterations << endl;
-                    cout << "Datos ordenados: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = bubbleSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
             case 2:
-                {
-                    vector<int> tempData = data;
-                    int iterations = insertionSort(tempData);
-                    cout << "Número de iteraciones realizadas: " << iterations << endl;
-                    cout << "Datos ordenados: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = insertionSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
             case 3:
-                {
-                    vector<int> tempData = data;
-                    int iterations = selectionSort(tempData);
-                    cout << "Número de iteraciones realizadas: " << iterations << endl;
-                    cout << "Datos ordenados: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = selectionSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
             case 4:
-                {
-                    vector<int> tempData = data;
-                    int n = tempData.size();
-                    mergeSort(tempData, 0, n - 1);
-                    cout << "Datos ordenados con Merge Sort: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = 0;
+                mergeSort(sortedData, 0, sortedData.size() - 1, iterations);
+                stop = high_resolution_clock::now();
                 break;
             case 5:
-                {
-                    vector<int> tempData = data;
-                    int iterations = quickSort(tempData, 0, tempData.size() - 1);
-                    cout << "Número de iteraciones realizadas: " << iterations << endl;
-                    cout << "Datos ordenados con Quick Sort: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = quickSort(sortedData, 0, sortedData.size() - 1);
+                stop = high_resolution_clock::now();
                 break;
             case 6:
-                {
-                    vector<int> tempData = data;
-                    int iterations;
-                    cout << "Datos ordenados con Bucket Sort: ";
-                    bucketSort(tempData, 10, iterations);
-                    cout << "Número de iteraciones realizadas en Bucket Sort: " << iterations << endl;
-                    printVector(tempData);
-                }
-                break;    
+                start = high_resolution_clock::now();
+                bucketSort(sortedData, 10, iterations);
+                stop = high_resolution_clock::now();
+                break;
             case 7:
-                {
-                    vector<int> tempData = data;
-                    int iterations = shellSort(tempData);
-                    cout << "Número de iteraciones realizadas en Shell Sort: " << iterations << endl;
-                    cout << "Datos ordenados con Shell Sort: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = shellSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
             case 8:
-                {
-                    vector<int> tempData = data;
-                    countingSort(tempData);
-                    cout << "Datos ordenados con Counting Sort: ";
-                    printVector(tempData);
-                }
+                start = high_resolution_clock::now();
+                iterations = radixSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
             case 9:
-                {
-                    vector<int> tempData = data;
-                    radixSort(tempData);
-                    cout << "Datos ordenados con Radix Sort: ";
-                    printVector(tempData);
-                }
-                break;    
-            case 10:
-                int newData;
-                cout << "Ingrese el nuevo dato: ";
-                cin >> newData;
-                data.push_back(newData);
-                cout << "Dato agregado correctamente.\n";
+                start = high_resolution_clock::now();
+                iterations = countingSort(sortedData);
+                stop = high_resolution_clock::now();
                 break;
-            case 11:
-                if (!data.empty()) {
-                    int index;
-                    cout << "Ingrese el índice del dato que desea eliminar (0 - " << data.size() - 1 << "): ";
-                    cin >> index;
-                    if (index >= 0 && index < data.size()) {
-                        data.erase(data.begin() + index);
-                        cout << "Dato eliminado correctamente.\n";
-                    } else {
-                        cout << "Índice inválido.\n";
-                    }
+            case 10: {
+                long long number;
+                cout << "Ingrese el número a insertar: ";
+                cin >> number;
+                insertNumber(data, number);
+                cout << "Número insertado correctamente." << endl;
+                continue;
+            }
+            case 11: {
+                long long number;
+                cout << "Ingrese el número a eliminar: ";
+                cin >> number;
+                if (deleteNumber(data, number)) {
+                    cout << "Número eliminado correctamente." << endl;
                 } else {
-                    cout << "No hay datos para eliminar.\n";
+                    cout << "Número no encontrado." << endl;
                 }
-                break;
+                continue;
+            }
             case 12:
-                break;
+                return 0;
             default:
-                cout << "Opción no válida. Por favor, ingrese un número del 1 al 12.\n";
+                cout << "Opción no válida." << endl;
+                continue;
         }
-    } while (choice != 12);
 
-    cout << "Gracias por usar el programa.\n";
+        duration = duration_cast<microseconds>(stop - start);
+        cout << "Datos ordenados: ";
+        for (long long num : sortedData) {
+            cout << num << " ";
+        }
+        cout << endl;
+        cout << "Tiempo de ejecución: " << duration.count() << " microsegundos" << endl;
+        cout << "Iteraciones: " << iterations << endl;
+    }
 
     return 0;
 }
